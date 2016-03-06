@@ -1,0 +1,18 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.fontSize": 14,
+    "editor.quickSuggestionsDelay": 20,
+    "editor.wrappingColumn": 120,
+    "editor.scrollBeyondLastLine": false,
+    
+    //"git.enabled": false,
+    
+    "go.buildOnSave": true,
+    "go.lintOnSave": true,
+    "go.vetOnSave": true,
+    "go.buildFlags": [],
+    "go.lintFlags": [],
+    "go.vetFlags": [],
+    "go.formatOnSave": true,
+    "go.formatTool": "goreturns"
+}

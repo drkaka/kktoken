@@ -20,6 +20,7 @@ env:
   - dbname=test
   - dbhost=localhost
   - dbuser=postgres
+  - rdshost=localhost
   
 before_install:
   - sudo /etc/init.d/postgresql stop
