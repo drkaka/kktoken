@@ -9,5 +9,6 @@ import (
 func Use(poolDB *pgx.ConnPool, poolRDS *redis.Pool) error {
 	dbPool = poolDB
 	rdsPool = poolRDS
-	return nil
+
+	return prepareDB()
 }
