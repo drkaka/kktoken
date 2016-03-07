@@ -11,10 +11,24 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	setPools(t)
+	testInvalidUseParameters(t)
 
+	setPools(t)
 	defer dbPool.Close()
 	defer rdsPool.Close()
+
+	testTableGeneration(t)
+
+}
+
+func testInvalidUseParameters(t *testing.T) {
+	if err := Use(nil, nil, 0, 1); err == nil {
+		t.Error("Should have error.")
+	}
+
+	if err := Use(nil, nil, 1, 0); err == nil {
+		t.Error("Should have error.")
+	}
 }
 
 func setPools(t *testing.T) {
@@ -61,7 +75,7 @@ func setPools(t *testing.T) {
 		},
 	}
 
-	if err := Use(poolDB, poolRDS); err != nil {
+	if err := Use(poolDB, poolRDS, uint32(300), uint32(30000000)); err != nil {
 		t.Error(err)
 	}
 }

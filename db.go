@@ -5,6 +5,7 @@ import (
 )
 
 var dbPool *pgx.ConnPool
+var dbLiveSeconds uint32
 
 // prepareDB to prepare the database.
 func prepareDB() error {
