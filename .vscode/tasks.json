@@ -22,7 +22,7 @@
             "suppressTaskName": true,
             "isTestCommand": true,
             "args": [
-                "dbname='drkaka' dbhost='192.168.99.123' dbuser='drkaka' dbpassword='drkaka' rdshost='192.168.99.123' go test -race -cover -v"
+                "dbname='drkaka' dbhost='192.168.99.123' dbuser='drkaka' dbpassword='drkaka' rdshost='192.168.99.123:6379' go test -race -cover -v"
             ]
         }
     ]
