@@ -20,6 +20,7 @@ func TestMain(t *testing.T) {
 	testTableGeneration(t)
 
 	testCacheMethods(t)
+	testDBMethods(t)
 }
 
 func testInvalidUseParameters(t *testing.T) {
