@@ -21,6 +21,8 @@ func TestMain(t *testing.T) {
 
 	testCacheMethods(t)
 	testDBMethods(t)
+
+	testPublicMethods(t)
 }
 
 func testInvalidUseParameters(t *testing.T) {
@@ -30,6 +32,58 @@ func testInvalidUseParameters(t *testing.T) {
 
 	if err := Use(nil, nil, 1, 0); err == nil {
 		t.Error("Should have error.")
+	}
+}
+
+func testPublicMethods(t *testing.T) {
+	userid := int32(3)
+
+	tk, err := MakeToken(userid)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if uid, ok, err := getUserID(tk); err != nil {
+		t.Error(err)
+	} else if !ok {
+		t.Error("Should get userid from db.")
+	} else if uid != userid {
+		t.Error("Userid is wrong.")
+	}
+
+	if uid, ok, err := getCache(tk); err != nil {
+		t.Error(err)
+	} else if !ok {
+		t.Error("Should get userid from cache.")
+	} else if uid != userid {
+		t.Error("Userid is wrong.")
+	}
+
+	// delete the cache
+	if err := delCache(tk); err != nil {
+		t.Error(err)
+	}
+
+	// should get result and set cache
+	if uid, ok, err := GetUserID(tk); err != nil {
+		t.Error(err)
+	} else if !ok {
+		t.Error("Should get userid.")
+	} else if uid != userid {
+		t.Error("Userid is wrong.")
+	}
+
+	// should have cache now
+	if uid, ok, err := getCache(tk); err != nil {
+		t.Error(err)
+	} else if !ok {
+		t.Error("Should get userid from cache.")
+	} else if uid != userid {
+		t.Error("Userid is wrong.")
+	}
+
+	if err := DelToken(tk); err != nil {
+		t.Error(err)
 	}
 }
 

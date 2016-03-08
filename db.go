@@ -45,6 +45,7 @@ func getUserID(token string) (int32, bool, error) {
 	}
 
 	now := time.Now().Unix()
+	// If expire before now, delete the record.
 	if exp < int32(now) {
 		return 0, false, delToken(token)
 	}
