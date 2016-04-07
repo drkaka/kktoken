@@ -2,6 +2,7 @@ package kktoken
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -35,7 +36,7 @@ func Use(poolDB *pgx.ConnPool, poolRDS *redis.Pool, dbLive, rdsLive uint32) erro
 // MakeToken to make and set token to db and cache.
 // If error == kktoken.CacheErr, it means db is set, but cache not.
 func MakeToken(userid int32) (string, error) {
-	tk := uuid.NewV4().String()
+	tk := strings.Replace(uuid.NewV4().String(), "-", "", -1)
 	now := time.Now().Unix()
 
 	if err := setToken(tk, userid, int32(now)); err != nil {
