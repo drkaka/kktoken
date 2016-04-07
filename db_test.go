@@ -47,9 +47,8 @@ func getEmpty(t *testing.T) {
 func testSetGetDelete(t *testing.T) {
 	tk := uuid.NewV1().String()
 	userid := int32(3)
-	exp := uint32(time.Now().Unix()) + dbLiveSeconds
 
-	if err := setToken(tk, userid, exp); err != nil {
+	if err := setToken(tk, userid, int32(time.Now().Unix())); err != nil {
 		t.Error(err)
 	}
 

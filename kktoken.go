@@ -38,7 +38,7 @@ func MakeToken(userid int32) (string, error) {
 	tk := uuid.NewV4().String()
 	now := time.Now().Unix()
 
-	if err := setToken(tk, userid, uint32(now)+dbLiveSeconds); err != nil {
+	if err := setToken(tk, userid, int32(now)); err != nil {
 		return "", err
 	}
 

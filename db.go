@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	insert = "INSERT INTO token(token,userid,expire) VALUES($1,$2,$3)"
+	insert = "INSERT INTO token(token,userid,set_at) VALUES($1,$2,$3)"
 )
 
 var dbPool *pgx.ConnPool
@@ -18,24 +18,24 @@ func prepareDB() error {
 	s := `CREATE TABLE IF NOT EXISTS token (
 	token uuid primary key,
 	userid integer,
-    expire integer);`
+    set_at integer);`
 
 	_, err := dbPool.Exec(s)
 	return err
 }
 
 // setToken to set token.
-func setToken(token string, userid int32, exp uint32) error {
-	_, err := dbPool.Exec(insert, token, userid, exp)
+func setToken(token string, userid int32, setAt int32) error {
+	_, err := dbPool.Exec(insert, token, userid, setAt)
 	return err
 }
 
 // getUserID to get userid from token.
 func getUserID(token string) (int32, bool, error) {
-	var exp int32
+	var setAt int32
 	var userid int32
 
-	err := dbPool.QueryRow("SELECT userid, expire FROM token WHERE token=$1", token).Scan(&userid, &exp)
+	err := dbPool.QueryRow("SELECT userid, set_at FROM token WHERE token=$1", token).Scan(&userid, &setAt)
 	if err == pgx.ErrNoRows {
 		return 0, false, nil
 	}
@@ -46,7 +46,7 @@ func getUserID(token string) (int32, bool, error) {
 
 	now := time.Now().Unix()
 	// If expire before now, delete the record.
-	if exp < int32(now) {
+	if uint32(setAt)+dbLiveSeconds < uint32(now) {
 		return 0, false, delToken(token)
 	}
 
