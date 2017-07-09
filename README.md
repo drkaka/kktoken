@@ -15,7 +15,7 @@ It is using PostgreSQL as the database and will create a table:
 CREATE TABLE IF NOT EXISTS token (
 	token uuid primary key,
 	userid integer,
-    expire integer
+	expire integer
 );
 ```
 
@@ -29,23 +29,23 @@ go get github.com/garyburd/redigo/redis
 
 ## Usage 
 
-####First need to use the module with the pgx pool, redis pool, db live seconds and cache live seconds passed in:
+#### First need to use the module with the pgx pool, redis pool, db live seconds and cache live seconds passed in:
 ```Go
 err := kktoken.Use(poolDB, poolRDS, uint32(300), uint32(30000000))
 ```
 
-####Make and store token for user:
+#### Make and store token for user:
 ```Go
 token, err := MakeToken(userid)
 ```
 
-####Get userid from token:
+#### Get userid from token:
 ```Go
 userid, ok, err := GetUserID(token)
 ```
 If token is not in cache, it will set to cache.
 
-####Delete token:
+#### Delete token:
 ```Go
 err := DelToken(token)
 ```

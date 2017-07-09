@@ -1,18 +1,28 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "editor.fontSize": 14,
     "editor.quickSuggestionsDelay": 20,
-    "editor.wrappingColumn": 120,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
     "editor.scrollBeyondLastLine": false,
-    
+
     //"git.enabled": false,
-    
-    "go.buildOnSave": true,
-    "go.lintOnSave": true,
-    "go.vetOnSave": true,
+
+    "go.buildOnSave": "workspace",
+    "go.lintOnSave": "workspace",
+    "go.lintTool": "golint",
+    "go.docsTool": "godoc",
+    "go.vetOnSave": "workspace",
     "go.buildFlags": [],
     "go.lintFlags": [],
     "go.vetFlags": [],
     "go.formatOnSave": true,
-    "go.formatTool": "goreturns"
+    "go.coverOnSave": false,
+    "go.formatTool": "goreturns",
+    "go.useCodeSnippetsOnFunctionSuggest": true,
+    "go.inferGopath": true,
+    "go.gocodeAutoBuild": true,
+    "go.enableCodeLens": {
+        "references": false,
+        "runtest": true
+    }
 }

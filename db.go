@@ -7,26 +7,35 @@ import (
 )
 
 const (
-	insert = "INSERT INTO token(token,userid,set_at) VALUES($1,$2,$3)"
+	insert = "INSERT INTO token(token,id,create_at,last_use) VALUES($1,$2,$3,$4)"
 )
 
 var dbPool *pgx.ConnPool
 var dbLiveSeconds uint32
 
+// DBInfo information for the database
+type DBInfo struct {
+	DBPool           *pgx.ConnPool
+	PersistentSecond uint32
+	// DBTableName default: token
+	DBTableName string
+}
+
 // prepareDB to prepare the database.
 func prepareDB() error {
 	s := `CREATE TABLE IF NOT EXISTS token (
-	token uuid primary key,
-	userid integer,
-    set_at integer);`
+	token UUID PRIMARY KEY,
+	id INTEGER NOT NULL,
+    create_at INTEGER NOT NULL,
+	last_use INTEGER NOT NULL);`
 
 	_, err := dbPool.Exec(s)
 	return err
 }
 
 // setToken to set token.
-func setToken(token string, userid int32, setAt int32) error {
-	_, err := dbPool.Exec(insert, token, userid, setAt)
+func setToken(token string, userid int32, createAt int32) error {
+	_, err := dbPool.Exec(insert, token, userid, createAt, createAt)
 	return err
 }
 

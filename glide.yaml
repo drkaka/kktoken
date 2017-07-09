@@ -1,0 +1,12 @@
+package: github.com/drkaka/kktoken
+import:
+- package: github.com/jackc/pgx
+- package: github.com/satori/go.uuid
+- package: github.com/garyburd/redigo/redis
+testImport:
+- package: github.com/mattn/goveralls
+  version: ^0.0.1
+- package: github.com/pborman/uuid
+- package: golang.org/x/tools
+  subpackages:
+  - cover

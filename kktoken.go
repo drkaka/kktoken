@@ -10,18 +10,14 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-// CacheErr means db is set, while error pop when setting to cache.
-var CacheErr error
-
-func init() {
-	CacheErr = errors.New("Cache not set.")
-}
+// ErrCache means db is set, while error pop when setting to cache.
+var ErrCache = errors.New("cache not set")
 
 // Use this to set the pools.
 // dbLive and cacheLive are the available seconds for in db and in redis.
 func Use(poolDB *pgx.ConnPool, poolRDS *redis.Pool, dbLive, rdsLive uint32) error {
 	if dbLive == 0 || rdsLive == 0 {
-		return errors.New("Live seconds must larger than 0.")
+		return errors.New("live seconds must larger than 0.")
 	}
 
 	dbPool = poolDB
