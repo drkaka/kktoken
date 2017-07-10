@@ -1,6 +1,7 @@
 package: github.com/drkaka/kktoken
 import:
 - package: github.com/jackc/pgx
+  version: "*"
 - package: github.com/satori/go.uuid
 - package: github.com/garyburd/redigo/redis
 testImport:

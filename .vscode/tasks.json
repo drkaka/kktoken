@@ -10,13 +10,13 @@
 			"dbhost": "192.168.1.202",
 			"dbuser": "drkaka",
 			"dbpassword": "drkaka",
-			"rdshost": "192.168.2.202:6379"
+			"rdshost": "192.168.1.202:6379"
 		}
     },
     "tasks": [
         {
             "taskName": "test",
-            "args": [ "-v", "-cover", "-race"],
+            "args": ["-v", "-cover", "-race"],
             "isTestCommand": true
         }
     ]
