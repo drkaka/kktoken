@@ -13,15 +13,16 @@ type RDSInfo struct {
 	LiveSecond uint32
 }
 
-var rdsPool *redis.Pool
-var rdsLiveSecond uint32
+var (
+	rdsPool       *redis.Pool
+	rdsLiveSecond = uint32(300)
+)
 
 func prepareRedis(rdsInfo *RDSInfo) error {
 	if rdsInfo.Pool == nil {
 		return errors.New("rdsInfo Pool Can't be nil")
 	}
 
-	rdsLiveSecond = 300
 	if rdsInfo.LiveSecond > 0 {
 		// set the value if not 0
 		rdsLiveSecond = rdsInfo.LiveSecond

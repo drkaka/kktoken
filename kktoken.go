@@ -84,9 +84,9 @@ func startMapEXPCheck(seconds uint32) {
 	c := time.Tick(time.Duration(seconds) * time.Second)
 	for now := range c {
 		var delTokens []string
-		var all []string
-		var allLatest []int32
-		var allIDs []int32
+		var delLatest []int32
+		var actTokens []string
+		var actIDs []int32
 
 		// get exp threshost
 		exp := now.Unix() - int64(mapLiveSecond)
@@ -95,11 +95,14 @@ func startMapEXPCheck(seconds uint32) {
 		allTokens.lock.Lock()
 		for k, v := range allTokens.all {
 			if int64(v.lastUse) < exp {
+				// deleted tokens will update DB
 				delTokens = append(delTokens, k)
+				delLatest = append(delLatest, v.lastUse)
+			} else {
+				// active tokens will update cache
+				actTokens = append(delTokens, k)
+				actIDs = append(actIDs, v.userid)
 			}
-			all = append(all, k)
-			allIDs = append(allIDs, v.userid)
-			allLatest = append(allLatest, v.lastUse)
 		}
 		// delete expired tokens from map
 		if len(delTokens) > 0 {
@@ -109,13 +112,13 @@ func startMapEXPCheck(seconds uint32) {
 		}
 		allTokens.lock.Unlock()
 
-		// update all tokens in map to redis
-		if err := setRedisCache(all, allIDs); err != nil {
+		// update active tokens in map to redis
+		if err := setRedisCache(actTokens, actIDs); err != nil {
 			errChan <- err
 		}
-		// update all tokens in map to DB
-		for i := 0; i < len(all); i++ {
-			err := updateToken(all[i], allLatest[i])
+		// update deleted tokens in map to DB
+		for i := 0; i < len(delTokens); i++ {
+			err := updateToken(delTokens[i], delLatest[i])
 			errChan <- err
 		}
 	}
@@ -148,8 +151,8 @@ func MakeToken(userid int32, info map[string]interface{}) (string, error) {
 	if userid <= 0 {
 		return "", errors.New("userid should no less than 0")
 	}
-	// Generate a UUID v4 token and remove "-"
-	tk := strings.Replace(uuid.NewV4().String(), "-", "", -1)
+	// Generate a UUID v4 token, remove "-" and lower case
+	tk := strings.ToLower(strings.Replace(uuid.NewV4().String(), "-", "", -1))
 	now := time.Now().Unix()
 
 	one := TokenInfo{

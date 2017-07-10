@@ -3,6 +3,7 @@ package kktoken
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx"
@@ -168,6 +169,8 @@ func getAllTokens(userid int32) ([]TokenInfo, error) {
 		if err := rows.Scan(&one.Token, &one.Info, &one.CreateAt, &one.LastUse); err != nil {
 			return tokens, err
 		}
+		// remove "-" and lower case
+		one.Token = strings.ToLower(strings.Replace(one.Token, "-", "", -1))
 		one.UserID = userid
 		tokens = append(tokens, one)
 	}

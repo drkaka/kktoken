@@ -72,7 +72,7 @@ func testEXPCheck(t *testing.T) {
 
 func testCRUD(t *testing.T) {
 	tk := uuid.NewV1().String()
-	userid := int32(3)
+	userid := int32(30)
 
 	info := map[string]interface{}{
 		"device": "ios",

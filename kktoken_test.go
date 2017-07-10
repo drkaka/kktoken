@@ -262,19 +262,26 @@ func testMapEXPCheck(t *testing.T) {
 
 	// start exp check
 	go startMapEXPCheck(2)
-	time.Sleep(2002 * time.Millisecond)
+	time.Sleep(1520 * time.Millisecond)
 
-	// should not in Map
+	tk2, err := MakeToken(int32(11), info)
+	assert.NoError(t, err, "should not have error to make token")
+
+	time.Sleep(500 * time.Millisecond)
+
+	// check remains in Map
 	allTokens.lock.RLock()
 	_, ok := allTokens.all[tk]
-	allTokens.lock.RUnlock()
 	assert.False(t, ok, "should not exist in Map")
+	_, ok = allTokens.all[tk2]
+	assert.True(t, ok, "should exist in Map")
+	allTokens.lock.RUnlock()
 
-	// check redis TTL, should be updated
+	// check redis TTL, should not be updated
 	conn := rdsPool.Get()
 	defer conn.Close()
 
 	ttl, err := redis.Int(conn.Do("TTL", tk))
 	assert.NoError(t, err, "should not have error to get cache TTL")
-	assert.Equal(t, rdsLiveSecond, uint32(ttl), "TTL wrong")
+	assert.Equal(t, rdsLiveSecond-2, uint32(ttl), "TTL wrong")
 }

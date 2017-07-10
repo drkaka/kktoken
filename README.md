@@ -1,6 +1,6 @@
 # kktoken [![Build Status][ci-img]][ci] [![Coverage Status][cov-img]][cov]
 
-There are three levels for token usage. First go to Map, then go to Redis and finally go to PostgreSQL. Every given EXPCheckSecond for MapInfo, it will check expirations in Map, update last_use information to DB and refresh cache in Redis. Every given EXPCheckSecond for DBInfo, it will check expirations in PostgreSQL and delete the expired tokens.
+There are three levels for token usage. First go to Map, then go to Redis and finally go to PostgreSQL. Every given EXPCheckSecond for MapInfo, it will check expirations in Map, the expired records will update last_use information to DB and active records will refresh cache in Redis. Every given EXPCheckSecond for DBInfo, it will check expirations in PostgreSQL and delete the expired tokens.
 
 ## Database
 
@@ -8,11 +8,12 @@ It is using PostgreSQL as the database and will create a table with the given ta
 
 ```sql
 CREATE TABLE IF NOT EXISTS token (
-	token UUID PRIMARY KEY,
-	user_id INTEGER NOT NULL,
-	info JSONB,
+  token UUID PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  info JSONB,
   create_at INTEGER NOT NULL,
-	last_use INTEGER NOT NULL);
+  last_use INTEGER NOT NULL
+);
 ```
 
 And index on user_id to serach all tokens for a user.
@@ -37,30 +38,57 @@ go get github.com/garyburd/redigo/redis
 
 ## Usage
 
-### First need to use the module with the pgx pool, redis pool, db live seconds and cache live seconds passed in:
+First need to use the module with configurations:
 
 ```Go
-err := kktoken.Use(poolDB, poolRDS, uint32(300), uint32(30000000))
+dbInfo := &DBInfo{
+  Pool:      poolDB,
+  TableName: testTableName,
+  PersistentSecond: 0, // 0 for never expire
+  EXPCheckSecond: 300, // default: 300
+}
+
+rdsInfo := &RDSInfo{
+  Pool: poolRDS,
+  LiveSecond: 300, // default: 300
+}
+
+mapInfo := &MapInfo{
+  LiveSecond: 60, // default: 60
+  EXPCheckSecond: 31, // default: 31
+}
+
+// errChan to receive errors generated from background goroutines
+errChan, err := kktoken.Use(dbInfo, rdsInfo, mapInfo)
 ```
 
-### Make and store token for user:
+Make and store token for userid and related info:
 
 ```Go
-token, err := MakeToken(userid)
+info := map[string]interface{}{
+	"device": "ios",
+}
+token, err := MakeToken(userid, info)
 ```
 
-### Get userid from token:
+Get userid from token:
 
 ```Go
-userid, ok, err := GetUserID(token)
+userid, err := GetUserID(token)
 ```
 
-If token is not in cache, it will set to cache.
+If token is not in cache, it will set to Map and Cache. Every call will update last_use of a certain and flush to DB when MapEXPCheck happen.
 
-### Delete token
+Delete token
 
 ```Go
 err := DelToken(token)
+```
+
+Get all token information:
+
+```Go
+tokens, err = GetUserTokens(userid)
 ```
 
 [ci-img]: https://travis-ci.org/drkaka/kktoken.svg?branch=master
