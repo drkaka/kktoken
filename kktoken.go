@@ -113,9 +113,12 @@ func startMapEXPCheck(seconds uint32) {
 		allTokens.lock.Unlock()
 
 		// update active tokens in map to redis
-		if err := setRedisCache(actTokens, actIDs); err != nil {
-			errChan <- err
+		if len(actTokens) > 0 {
+			if err := setRedisCache(actTokens, actIDs); err != nil {
+				errChan <- err
+			}
 		}
+
 		// update deleted tokens in map to DB
 		for i := 0; i < len(delTokens); i++ {
 			err := updateToken(delTokens[i], delLatest[i])
@@ -146,7 +149,7 @@ func setToMap(tk string, userid int32) {
 }
 
 // MakeToken to make and set token to db, cache and map.
-// If error == kktoken.CacheErr, it means db is set, but cache not.
+// If error == kktoken.ErrCache, it means db is set, but cache not.
 func MakeToken(userid int32, info map[string]interface{}) (string, error) {
 	if userid <= 0 {
 		return "", errors.New("userid should no less than 0")
@@ -181,7 +184,7 @@ func MakeToken(userid int32, info map[string]interface{}) (string, error) {
 
 // GetUserID to get userid from token.
 // return userid, got, error
-// the error can be kktoken.CacheErr.
+// the error can be kktoken.ErrCache.
 func GetUserID(token string) (int32, error) {
 	var userid int32
 	var err error
